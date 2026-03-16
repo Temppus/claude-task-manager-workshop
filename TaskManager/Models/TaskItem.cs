@@ -21,7 +21,7 @@ public class TaskItem
     public Guid Id { get; set; }
 
     [Required]
-    [MaxLength(200)]
+    [MaxLength(255)]
     public string Title { get; set; } = string.Empty;
 
     public string? Description { get; set; }

@@ -52,11 +52,59 @@ public class TasksApiTests : IClassFixture<TaskManagerApiFactory>, IAsyncLifetim
     }
 
     [Fact]
-    public async Task Test_CreateTask_WithTitleExceeding200Chars_ReturnsBadRequest()
+    public async Task Test_CreateTask_WithTitleExceeding255Chars_ReturnsBadRequest()
     {
-        var request = new { title = new string('x', 201), priority = "low" };
+        var request = new { title = new string('x', 256), priority = "low" };
 
         var response = await _client.PostAsJsonAsync("/api/tasks", request, JsonOptions);
+
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+    }
+
+    [Fact]
+    public async Task Test_CreateTask_WithTitleExactly255Chars_Succeeds()
+    {
+        var request = new { title = new string('x', 255), priority = "low" };
+
+        var response = await _client.PostAsJsonAsync("/api/tasks", request, JsonOptions);
+
+        response.StatusCode.Should().Be(HttpStatusCode.Created);
+        var task = await response.Content.ReadFromJsonAsync<TaskResponse>(JsonOptions);
+        task!.Title.Should().HaveLength(255);
+    }
+
+    [Fact]
+    public async Task Test_CreateTask_WithTitle201Chars_Succeeds()
+    {
+        var request = new { title = new string('a', 201), priority = "medium" };
+
+        var response = await _client.PostAsJsonAsync("/api/tasks", request, JsonOptions);
+
+        response.StatusCode.Should().Be(HttpStatusCode.Created);
+        var task = await response.Content.ReadFromJsonAsync<TaskResponse>(JsonOptions);
+        task!.Title.Should().HaveLength(201);
+    }
+
+    [Fact]
+    public async Task Test_UpdateTask_WithTitleExactly255Chars_Succeeds()
+    {
+        var created = await CreateTask("Short title");
+
+        var response = await _client.PutAsJsonAsync($"/api/tasks/{created.Id}",
+            new { title = new string('y', 255) }, JsonOptions);
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        var task = await response.Content.ReadFromJsonAsync<TaskResponse>(JsonOptions);
+        task!.Title.Should().HaveLength(255);
+    }
+
+    [Fact]
+    public async Task Test_UpdateTask_WithTitleExceeding255Chars_ReturnsBadRequest()
+    {
+        var created = await CreateTask("Short title");
+
+        var response = await _client.PutAsJsonAsync($"/api/tasks/{created.Id}",
+            new { title = new string('y', 256) }, JsonOptions);
 
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }

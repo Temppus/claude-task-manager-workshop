@@ -6,7 +6,7 @@ namespace TaskManager.DTOs;
 public class CreateTaskRequest
 {
     [Required(ErrorMessage = "Title is required.")]
-    [MaxLength(200, ErrorMessage = "Title must be at most 200 characters.")]
+    [MaxLength(255, ErrorMessage = "Title must be at most 255 characters.")]
     public string Title { get; set; } = string.Empty;
 
     public string? Description { get; set; }
@@ -19,7 +19,7 @@ public class CreateTaskRequest
 
 public class UpdateTaskRequest
 {
-    [MaxLength(200, ErrorMessage = "Title must be at most 200 characters.")]
+    [MaxLength(255, ErrorMessage = "Title must be at most 255 characters.")]
     public string? Title { get; set; }
 
     public string? Description { get; set; }

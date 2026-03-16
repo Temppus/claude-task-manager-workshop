@@ -225,7 +225,7 @@ components:
       properties:
         title:
           type: string
-          maxLength: 200
+          maxLength: 255
         description:
           type: string
           nullable: true
@@ -243,7 +243,7 @@ components:
       properties:
         title:
           type: string
-          maxLength: 200
+          maxLength: 255
         description:
           type: string
           nullable: true
