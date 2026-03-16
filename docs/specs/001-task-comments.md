@@ -98,8 +98,41 @@ The following are deliberately excluded from this version and may be added in a 
 
 ## Test Plan
 
-| Category | Test Cases |
-|----------|------------|
-| **Create** | Valid comment returns 201, missing author (400), missing body (400), empty body (400), body too long (400), author too long (400), task not found (404) |
-| **List** | Returns all comments ordered by created_at asc, empty list for task with no comments, task not found (404) |
-| **Cascade** | Deleting a task deletes its comments |
+### Regression
+
+All existing task tests must continue to pass — particularly delete (cascade FK change) and stats (new table/model must not interfere).
+
+### Create comment (POST /api/tasks/{taskId}/comments)
+
+| # | Test | Expected |
+|---|------|----------|
+| 1 | Valid comment with author + body | 201, correct fields returned |
+| 2 | Missing author | 400 |
+| 3 | Missing body | 400 |
+| 4 | Empty body after trim | 400 |
+| 5 | Whitespace-only author | 400 |
+| 6 | Whitespace-only body | 400 |
+| 7 | Body exceeds 1000 chars | 400 |
+| 8 | Author exceeds 100 chars | 400 |
+| 9 | Multiline body with newlines | 201, newlines preserved |
+| 10 | Task not found | 404 |
+
+### List comments (GET /api/tasks/{taskId}/comments)
+
+| # | Test | Expected |
+|---|------|----------|
+| 11 | Returns comments ordered by created_at ascending | 200, oldest first |
+| 12 | Task with no comments | 200, empty array |
+| 13 | Task not found | 404 |
+
+### Cascade delete
+
+| # | Test | Expected |
+|---|------|----------|
+| 14 | Delete task removes its comments | GET comments returns 404 (task gone) |
+
+### Isolation
+
+| # | Test | Expected |
+|---|------|----------|
+| 15 | Comments on task A do not appear on task B | 200, only that task's comments |
