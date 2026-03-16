@@ -15,6 +15,7 @@ public class TasksController : ControllerBase
 
     public TasksController(AppDbContext db) => _db = db;
 
+    /// <summary>Create a new task with a title, optional description, priority, and due date.</summary>
     [HttpPost]
     [ProducesResponseType(typeof(TaskResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
@@ -41,6 +42,7 @@ public class TasksController : ControllerBase
         return CreatedAtAction(nameof(GetById), new { id = task.Id }, TaskResponse.FromEntity(task));
     }
 
+    /// <summary>List all tasks, optionally filtered by status and/or priority.</summary>
     [HttpGet]
     [ProducesResponseType(typeof(List<TaskResponse>), StatusCodes.Status200OK)]
     public async Task<IActionResult> List(
@@ -68,6 +70,7 @@ public class TasksController : ControllerBase
         return Ok(tasks.Select(TaskResponse.FromEntity));
     }
 
+    /// <summary>Get a single task by its ID.</summary>
     [HttpGet("{id:guid}")]
     [ProducesResponseType(typeof(TaskResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
@@ -80,6 +83,7 @@ public class TasksController : ControllerBase
         return Ok(TaskResponse.FromEntity(task));
     }
 
+    /// <summary>Update a task's title, description, priority, or due date. Only provided fields are changed.</summary>
     [HttpPut("{id:guid}")]
     [ProducesResponseType(typeof(TaskResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
@@ -112,6 +116,7 @@ public class TasksController : ControllerBase
         return Ok(TaskResponse.FromEntity(task));
     }
 
+    /// <summary>Permanently delete a task by its ID.</summary>
     [HttpDelete("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
@@ -127,6 +132,7 @@ public class TasksController : ControllerBase
         return NoContent();
     }
 
+    /// <summary>Advance a task's status. Only todo to in_progress and in_progress to done are allowed.</summary>
     [HttpPatch("{id:guid}/status")]
     [ProducesResponseType(typeof(TaskResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
@@ -164,6 +170,7 @@ public class TasksController : ControllerBase
         return Ok(TaskResponse.FromEntity(task));
     }
 
+    /// <summary>Search tasks by keyword. Performs case-insensitive matching against title and description.</summary>
     [HttpGet("search")]
     [ProducesResponseType(typeof(List<TaskResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
@@ -182,6 +189,7 @@ public class TasksController : ControllerBase
         return Ok(tasks.Select(TaskResponse.FromEntity));
     }
 
+    /// <summary>Get dashboard statistics: total count, breakdown by status/priority, and overdue count.</summary>
     [HttpGet("stats")]
     [ProducesResponseType(typeof(DashboardStats), StatusCodes.Status200OK)]
     public async Task<IActionResult> Stats()
