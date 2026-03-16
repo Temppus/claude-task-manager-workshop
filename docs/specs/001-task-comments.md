@@ -73,11 +73,22 @@ Index on `task_id` for efficient lookups.
 ## Business Rules
 
 1. Both `author` and `body` are required.
-2. `author` max length: 100 characters.
-3. `body` max length: 1000 characters.
-4. Comments can be added to tasks in any status (todo, in_progress, done).
-5. Deleting a task cascades to delete all its comments.
-6. Comments are returned oldest-first by default.
+2. `author` and `body` are trimmed of leading/trailing whitespace before validation — whitespace-only values are rejected as empty.
+3. `author` max length: 100 characters.
+4. `body` max length: 1000 characters. Multiline text (newlines) is allowed.
+5. Comments can be added to tasks in any status (todo, in_progress, done).
+6. Deleting a task cascades to delete all its comments.
+7. Comments are returned oldest-first by default.
+8. Adding a comment does **not** update the task's `updated_at` timestamp.
+
+## Out of Scope (intentional)
+
+The following are deliberately excluded from this version and may be added in a future spec:
+
+- **Edit comment** (PUT/PATCH) — comments are immutable once created.
+- **Delete comment** (DELETE) — comments cannot be individually removed.
+- **Pagination** — all comments are returned in a single response.
+- **Comment count on task response** — no `comment_count` field on task endpoints.
 
 ## Agent Tasks
 
