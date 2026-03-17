@@ -11,7 +11,6 @@ public class CreateTaskRequest
 
     public string? Description { get; set; }
 
-    [Required(ErrorMessage = "Priority is required.")]
     public TaskPriority Priority { get; set; } = TaskPriority.Medium;
 
     public DateTime? DueDate { get; set; }

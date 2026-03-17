@@ -167,6 +167,71 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
 
+  /api/tasks/{taskId}/comments:
+    post:
+      summary: Add a comment to a task
+      operationId: createComment
+      tags: [Comments]
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateCommentRequest"
+      responses:
+        "201":
+          description: Comment created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommentResponse"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Task not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+    get:
+      summary: List all comments for a task, ordered oldest first
+      operationId: listComments
+      tags: [Comments]
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: List of comments
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CommentResponse"
+        "404":
+          description: Task not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
   /api/tasks/search:
     get:
       summary: Search tasks by keyword (title and description, case-insensitive)
@@ -316,6 +381,34 @@ components:
               type: integer
         overdue_tasks:
           type: integer
+
+    CreateCommentRequest:
+      type: object
+      required: [author, body]
+      properties:
+        author:
+          type: string
+          maxLength: 100
+        body:
+          type: string
+          maxLength: 1000
+
+    CommentResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        task_id:
+          type: string
+          format: uuid
+        author:
+          type: string
+        body:
+          type: string
+        created_at:
+          type: string
+          format: date-time
 
     ErrorResponse:
       type: object

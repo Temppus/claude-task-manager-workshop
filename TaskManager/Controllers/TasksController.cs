@@ -45,6 +45,7 @@ public class TasksController : ControllerBase
     /// <summary>List all tasks, optionally filtered by status and/or priority.</summary>
     [HttpGet]
     [ProducesResponseType(typeof(List<TaskResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> List(
         [FromQuery] string? status = null,
         [FromQuery] string? priority = null)
